@@ -17,6 +17,7 @@ module.exports = {
           100: "#BFE8D7",
           200: "#22B27E",
           300: "#009B6A", // 👑 Royal Emerald
+          400: "#064E3B",
         },
 
         accent: {
