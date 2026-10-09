@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
-interface UseAppwriteOptions<T, P extends Record<string, string | number>> {
+interface UseAppwriteOptions<T, P = undefined> {
   fn: (params: P) => Promise<T>;
   params?: P;
   skip?: boolean;
@@ -14,10 +14,9 @@ interface UseAppwriteReturn<T, P> {
   refetch: (newParams?: P) => Promise<void>;
 }
 
-// Custom React hook for managing Appwrite API calls with state handling
-export const useAppwrite = <T, P extends Record<string, string | number>>({
+export const useAppwrite = <T, P = undefined>({
   fn,
-  params = {} as P,
+  params,
   skip = false,
 }: UseAppwriteOptions<T, P>): UseAppwriteReturn<T, P> => {
   const [data, setData] = useState<T | null>(null);
@@ -25,16 +24,17 @@ export const useAppwrite = <T, P extends Record<string, string | number>>({
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(
-    async (fetchParams: P) => {
+    async (fetchParams?: P) => {
       setLoading(true);
       setError(null);
 
       try {
-        const result = await fn(fetchParams);
+        const result = await fn(fetchParams as P);
         setData(result);
       } catch (err: unknown) {
         const errorMessage =
-          err instanceof Error ? err.message : "An unkown error occured";
+          err instanceof Error ? err.message : "An unknown error occurred";
+
         setError(errorMessage);
         Alert.alert("Error", errorMessage);
       } finally {
@@ -48,10 +48,16 @@ export const useAppwrite = <T, P extends Record<string, string | number>>({
     if (!skip) {
       fetchData(params);
     }
-  }, []);
+  }, [skip, params, fetchData]);
 
-  const refetch = async (newParams?: P) =>
-    await fetchData(newParams ?? ({} as P));
+  const refetch = async (newParams?: P) => {
+    await fetchData(newParams ?? params);
+  };
 
-  return { data, loading, error, refetch };
+  return {
+    data,
+    loading,
+    error,
+    refetch,
+  };
 };

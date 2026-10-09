@@ -66,7 +66,7 @@ const profile = () => {
           <Text className="text-xl font-rubik-bold text-primary-300">
             Profile
           </Text>
-          <Image source={icons.bell} className="size-7" tintColor="#009B6A" />
+          <Image source={icons.bell} className="size-8" tintColor="#22B27E" />
         </View>
 
         <View className="flex-row justify-center items-center flex mt-5">
